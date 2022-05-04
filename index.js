@@ -41,6 +41,11 @@ async function run() {
       const fruit = await fruitCollection.findOne(query);
       res.send(fruit);
     });
+    app.post("/fruit", async (req, res) => {
+      const newItem = req.body;
+      const result = await fruitCollection.insertOne(newItem);
+      res.send(result);
+    });
   } finally {
   }
 }
