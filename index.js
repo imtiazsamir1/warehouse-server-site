@@ -28,6 +28,13 @@ async function run() {
       res.send(fruits);
     });
 
+    app.get("/manageInv", async (req, res) => {
+      const query = {};
+      const cursor = fruitCollection.find(query);
+      const manageItem = await cursor.toArray();
+      res.send(manageItem);
+    });
+
     app.get("/fruit/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
