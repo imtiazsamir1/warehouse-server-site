@@ -14,11 +14,18 @@ app.use(express.json());
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
+  console.log(authHeader);
   if (!authHeader) {
     return res.status(401).send({ message: "unauthorized access" });
   }
-  const token = authHeader.split(" ")[1];
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {});
+  const token = authHeader?.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      console.log(err);
+      return res.status(403).send({ message: "Forbbiden" });
+    }
+    req.decoded = decoded;
+  });
   console.log("inside verifyJWT", authHeader);
   next();
 }
@@ -68,13 +75,18 @@ async function run() {
       res.send(result);
     });
     app.get("/items", verifyJWT, async (req, res) => {
-      const email = req.query.email;
-      console.log(email);
-      const query = { email: email };
+      const decodedEmail = req.decoded?.email;
 
-      const cursor = fruitCollection.find(query);
-      const item = await cursor.toArray();
-      res.send(item);
+      const email = req.query.email;
+
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const cursor = fruitCollection.find(query);
+        const item = await cursor.toArray();
+        res.send(item);
+      } else {
+        res.status(403).send({ message: "Forbbiden" });
+      }
     });
     app.get("/fruit/:id", async (req, res) => {
       const id = req.params.id;
