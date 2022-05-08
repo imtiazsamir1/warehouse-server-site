@@ -46,12 +46,52 @@ async function run() {
       const result = await fruitCollection.insertOne(newItem);
       res.send(result);
     });
-    // app.delete("/fruit/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const result = await fruitCollection.deleteOne(query);
-    //   res.send(result);
-    // });
+    app.get("/items", async (req, res) => {
+      const email = req.query.email;
+      console.log(email);
+      const query = { email: email };
+
+      const cursor = fruitCollection.find(query);
+      const item = await cursor.toArray();
+      res.send(item);
+    });
+    app.get("/fruit/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await fruitCollection.findOne(query);
+      res.send(result);
+    });
+    app.delete("/fruit/:id", async (req, res) => {
+      const id = req.params;
+      const query = { _id: ObjectId(id) };
+      const result = await fruitCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.get("/inventory/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const product = await fruitCollection.findOne(query);
+      res.send(product);
+    });
+    app.put("/inventory/:id", async (req, res) => {
+      const id = req.params.id;
+      const data = req.body;
+      console.log(data);
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          quantity: data.quantity,
+        },
+      };
+
+      const result = await fruitCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
   } finally {
   }
 }
