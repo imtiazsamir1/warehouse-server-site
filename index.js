@@ -133,6 +133,9 @@ run().catch(console.dir);
 app.get("/", (req, res) => {
   res.send("Running Server");
 });
+app.get("/hero", (req, res) => {
+  res.send("Hero Meets hero ku");
+});
 
 app.listen(port, () => {
   console.log("lis to port", port);
